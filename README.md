@@ -1,4 +1,4 @@
-# Defect_Analysis_in_Urban_Drainage_Systems
+# Sewer Defects Analysis
 
 This repository contains the code developed for the **Distribution and Properties of Defects in Urban Drainage Systems: An analysis of Auckland's Sewer Network** paper. Juana Herrán, María A. González, Jakobus E. van Zyl, and Theunis F. P. Henning. 
 
@@ -184,6 +184,12 @@ Before using the code, ensure you have the following packages installed:
 - `scipy`: Statistical tests
 - `tkinter`: File dialogs and simple GUI
 - `openpyxl`: Excel file support
+- `holoviews`: Interactive plots
+- `xlsxwriter`: Export data to Excel files
+
+You can install all required packages using pip:
+
+pip install numpy pandas matplotlib seaborn statsmodels scipy openpyxl holoviews xlsxwriter
 
 
 
@@ -300,7 +306,7 @@ This analysis supports the identification of combined failure patterns and depen
 
 
 ## 8) How to run the code
-To execute the analysis, simply run the script `DEFECT_SEWER_ANALYSIS.py.`
+To execute the analysis, simply run the script `DEFECT_SEWER_ANALYSIS.ipynb.`
 When the code starts, a window will automatically appear asking you to select the Excel file that contains the input data.
 
 Once the file is selected, the program will:
@@ -315,3 +321,11 @@ Once the file is selected, the program will:
 
 No additional user interaction is required beyond selecting the file.
 All output files (plots and Excel summaries) are automatically generated.
+
+
+
+
+
+
+
+
