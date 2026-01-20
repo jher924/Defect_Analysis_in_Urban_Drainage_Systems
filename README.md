@@ -1,10 +1,8 @@
 # Sewer Defects Analysis
 
-This repository contains the code developed for the **Distribution and Properties of Defects in Urban Drainage Systems: An analysis of Auckland's Sewer Network** paper. Juana Herrán, María A. González, Jakobus E. van Zyl, and Theunis F. P. Henning. 
+This repository contains the code developed for the **Distribution and Properties of Defects in Urban Drainage Systems: An analysis of Auckland's Sewer Network** paper by Juana Herrán, María A. González, Jakobus E. van Zyl, and Theunis F. P. Henning.
 
-**Email corresponding author:** jher924@aucklanduni.ac.nz
-
-The code allows users to:
+This repository uses sewer pipe and inspection data to perform a descriptive analysis of defects and their properties. The code allows users to:
 
 - Describe a sewer network and compare it with the subset of pipes inspected via CCTV, assessing representativeness.
 - Analyze and visualize properties of defects observed during inspections, including:
@@ -14,20 +12,42 @@ The code allows users to:
   - Longitudinal distance
   - Extent
   - Circumferential position
+
+The repository contains the code used to generate the tables and figures presented in the referenced paper. Although the paper presents results for the Auckland, New Zealand sewer network, the repository can be used with data from any sewer system.
+
 ---
+## Code Structure
 
-## 1) Overview
+The codebase consists of six Python files and one Jupyter Notebook, where the full analysis workflow is executed. The core logic is implemented in the Python scripts, while the Jupyter Notebook is used to orchestrate their execution and visualize results. Below is a general description of each file. Detailed documentation of individual functions can be found within the corresponding source files.
 
-To run the code with your own data, prepare an input file containing three sheets:
+#### Run_defect_description.ipynb
+This Jupyter Notebook serves as the main entry point of the project. It orchestrates the execution of all scripts and displays the tables and figures generated during the analysis. The notebook does not contain core processing logic; instead, it focuses on configuration, execution flow, and result visualization. It also manages the selection of materials (e.g., AC, CONC, VC, PVC, PE) and factors (e.g., age, length, slope, etc.) to be included in the analysis.
+#### config.py
+Defines the global variables that are accessed and used by the other files.
+#### load_excel.py
+Contains functions for loading and importing input data from an Excel file.
+#### data_preparation.py
+Prepares the data for analysis. It performs the required data merges and includes functions to select and validate the chosen materials and factors. In addition, it defines color maps for materials and defect types.
+#### dataset_description.py
+Provides the functions for a detailed description of the dataset, summarizing key properties and characteristics of the sewer network and inspections. It also analyzes the representativeness of the pipes inspected by CCTV.
+#### defect_correlation.py
+Contains the function used to calculate pearson correlations between defect types.
+#### defect_general_description.py
+Includes functions that generate a general description of the network, such as the number of defects per kilometer and per pipe, as well as the distribution of defect types by material.
+#### defect_properties_description.py
+Provides functions to analyze the properties of observed defects, including size, longitudinal distance, extent, and clock reference position.
+
+---
+## Input data
+
+To run the code with your own data, prepare an input file containing four sheets:
 
 1. **PIPES** – Description of the pipes in the network.
-2. **CCTV** – Information about the pipes that have been inspected.
+2. **CCTV** – Data related to pipe inspections.
 3. **DEFECTS** – Details of observed defects.
+4. **HYDRAULIC PROPERTIES (optional)** - Information on the hydraulic characteristics of the pipes, such as flow rate and velocity. This sheet should be included only if hydraulic properties are required as part of the network description; otherwise, it can be omitted.
 
-Each sheet must follow the required column structure (see details below).
-
-
-It is recommended to check the example workbook **`PIPE_GITHUB.xlsx`**, This file does not contain real data, nor is it the data used in the paper, as it cannot be shared due to confidentiality. However, the file serves as a reference for the format and the columns required to run the code.
+Below is a description of the required columns for each sheet.
 
 <table style="text-align:center;">
   <tr>
@@ -38,78 +58,35 @@ It is recommended to check the example workbook **`PIPE_GITHUB.xlsx`**, This fil
 
   <!-- PIPES -->
   <tr>
-    <td rowspan="13" style="vertical-align:middle;">PIPES</td>
-    <td>PIPE_ID</td>
+    <td rowspan="3" style="vertical-align:middle;">PIPES</td>
+    <td>Pipe_ID</td>
     <td>Unique identifier for each pipe in the network.</td>
   </tr>
   <tr>
-    <td>MATERIAL</td>
-    <td>Pipe material (e.g., PVC, PE, AC, CONC, VC).</td>
+    <td>Material</td>
+    <td>Pipe material.</td>
   </tr>
   <tr>
-    <td>DIAMETER</td>
-    <td>Internal pipe diameter (mm). Must be numeric, integer.</td>
+    <td>Factors (multiple columns) </td>
+    <td>Pipe characteristics to be included in the network description. Examples include installation year, diameter, length, depth, among others. Each attribute should be provided in a separate column.</td>
   </tr>
-  <tr>
-    <td>LENGTH</td>
-    <td>Pipe length (m). Must be numeric and non-negative.</td>
-  </tr>
-  <tr>
-    <td>SLOPE</td>
-    <td>Pipe slope, usually expressed as rise/run or %.</td>
-  </tr>
-  <tr>
-    <td>AVG_DEPTH</td>
-    <td>Average depth of the pipe below the surface (m).</td>
-  </tr>
-  <tr>
-    <td>INSTALL_YEAR</td>
-    <td>Year the pipe was installed. Must be a 4-digit integer.</td>
-  </tr>
-  <tr>
-    <td>FLOW_DRY_MAX</td>
-    <td>Maximum dry-weather flow capacity (L/s).</td>
-  </tr>
-  <tr>
-    <td>PIPE_CAPACITY</td>
-    <td>Nominal design capacity of the pipe (L/s).</td>
-  </tr>
-  <tr>
-    <td>FLOW_WET_MAX</td>
-    <td>Maximum wet-weather flow (L/s).</td>
-  </tr>
-  <tr>
-    <td>SEWER_CATEGORY</td>
-    <td>Classification of the pipe within the sewer network (e.g., local, transmission).</td>
-  </tr>
-  <tr>
-    <td>SEWAGE_CATEGORY</td>
-    <td>Type of sewage conveyed (e.g., wastewater, combined, stormwater).</td>
-  </tr>
-  <tr>
-    <td>LINING</td>
-    <td>Type of internal lining applied to the pipe (if any).</td>
-  </tr>
+  
 
   <!-- Separator -->
   <tr><td colspan="3"><hr></td></tr>
 
   <!-- CCTV -->
   <tr>
-    <td rowspan="4" style="vertical-align:middle;">CCTV</td>
-    <td>PIPE_ID</td>
-    <td>Unique identifier linking each CCTV inspection to the corresponding pipe in `df_pipes`.</td>
+    <td rowspan="3" style="vertical-align:middle;">CCTV</td>
+    <td>Pipe_ID</td>
+    <td>Unique identifier linking each CCTV inspection to the corresponding pipe.</td>
   </tr>
   <tr>
-    <td>INSP_DIRECTION</td>
+    <td>Inspection_direction</td>
     <td>Inspection direction, usually indicating whether the survey was carried out upstream or downstream.</td>
   </tr>
   <tr>
-    <td>INSP_DATE</td>
-    <td>Date when the CCTV inspection was performed (recommended format: YYYY-MM-DD).</td>
-  </tr>
-  <tr>
-    <td>SURVEY_LENGTH</td>
+    <td>Survey_length</td>
     <td>Length of the pipe surveyed during the CCTV inspection (m).</td>
   </tr>
 
@@ -119,208 +96,132 @@ It is recommended to check the example workbook **`PIPE_GITHUB.xlsx`**, This fil
   <!-- DEFECTS -->
   <tr>
     <td rowspan="9" style="vertical-align:middle;">DEFECTS</td>
-    <td>DEFECT_ID</td>
+    <td>Defect_ID</td>
     <td>Unique identifier for each defect.</td>
   </tr>
   <tr>
-    <td>PIPE_ID</td>
+    <td>Pipe_ID</td>
     <td>Unique identifier for each pipe in the network.</td>
   </tr>
   <tr>
-    <td>DEFECT_TYPE</td>
+    <td>Defect_code</td>
     <td>Type of defect.</td>
   </tr>
   <tr>
-    <td>DEFECT_SIZE</td>
+    <td>Quantification</td>
     <td>Size of the defect. Must be classified as S, M, or L. If the size is in a different format, it is recommended to adjust it to these categories in order to run the size plot.</td>
   </tr>
   <tr>
-    <td>CLOCK_REFERENCE_START</td>
+    <td>Circumferential_start</td>
     <td>Circumferential position where the defect begins. This is given by a clock reference (integer 1–12). If 0, the defect has no circumferential extent.</td>
   </tr>
   <tr>
-    <td>CLOCK_REFERENCE_END</td>
+    <td>Circumferential_end</td>
     <td>Circumferential position where the defect ends. This is given by a clock reference (integer 1–12). If 0, the defect has no circumferential extent.</td>
   </tr>
   <tr>
-    <td>LONGITUDINAL_DISTANCE_NORMALIZED</td>
+    <td>Longitudinal_distance_normalized</td>
     <td>Normalized longitudinal distance of the defect (defect position along the pipe divided by the pipe length). It represents the starting point on extend defects</td>
   </tr>
   <tr>
-    <td>DEFECT_LENGTH</td>
+    <td>Defect_length</td>
     <td>Normalized defect length (distance from the start of the defect to its end, relative to pipe length).</td>
+  </tr>
+<!-- Separator -->
+  <tr><td colspan="3"><hr></td></tr>
+
+  <!-- HYDRAULIC PROPERTIES -->
+  <tr>
+    <td rowspan="2" style="vertical-align:middle;">HYDRAULIC PROPERTIES</td>
+    <td>Pipe_ID</td>
+    <td>Unique identifier linking each property value to the corresponding pipe.</td>
+  </tr>
+  <tr>
+    <td>Hydraulic properties (multiple columns)</td>
+    <td>These are the hydraulic properties associated with each pipe. Examples include velocity, flow rate, and pipe capacity. Each property should be provided in a separate column.</td>
   </tr>
 <table>
 
+#### Data Assumptions and Notes
+- Pipe identifiers must be consistent across the PIPES, CCTV, and DEFECTS sheets.
+- Defect sizes (Quantification) are expected to be categorized as S, M, or L.
+- Clock reference positions must be integers between 1 and 12.
+- Normalized distances and lengths must be provided in the range [0, 1].
 
-## 2) Code Structure
+---
+## Data validation
+The following repository provides a tool for validating the data used in this analysis. It generates a report containing errors and warnings for pipes, CCTV inspections, defects, and hydraulic properties, helping identify data that may be unreliable and require further review.
 
-The code is organized into five main sections, described below:
+https://github.com/jher924/Defect_data_validation.git
 
-#### Section 1: Installation and Setup
-This section installs all the necessary packages required to run the code.
-#### Section 2: Data Input and Validation Workflow
-In this section, the user provides the input data.
-The code validates the data and generates an Excel report highlighting any errors or warnings in the input.
-#### Section 3: Data Preparation
-This section prepares the data for analysis.
-It performs necessary merges. The user selects the materials and variables of interest for further processing.
-#### Section 4: Dataset Description
-The code provides a detailed description of the dataset, summarizing key properties and characteristics of the sewer network and inspections. It also analyzes the representativeness of the pipes inspected by CCTV.
-#### Section 5: Defect Properties Analysis
-This section analyzes the properties of observed defects.
+The use of the data validation repository is not mandatory to run this repository. However, it is a useful tool for validating the input data prior to performing the analysis.
 
-
-
-## 3) Installation and Setup
-**Required Dependencies**
-
+---
+## Installation and Setup
 Before using the code, ensure you have the following packages installed:
 - `numpy`: Numerical computations
 - `pandas`: Data manipulation
 - `matplotlib`: Plotting and visualization
 - `seaborn`: Statistical plotting
-- `statsmodels`: Statistical analysis
-- `scipy`: Statistical tests
-- `tkinter`: File dialogs and simple GUI
 - `openpyxl`: Excel file support
-- `holoviews`: Interactive plots
-- `xlsxwriter`: Export data to Excel files
 
 You can install all required packages using pip:
 
-pip install numpy pandas matplotlib seaborn statsmodels scipy openpyxl holoviews xlsxwriter
+```python
+pip install numpy pandas matplotlib seaborn openpyxl
+```
+
+---
+## How to run the code
+To execute the analysis, open the notebook `Run_defect_description.ipynb.`
+
+In the _Load Data_ section of the notebook, update the following line with the correct path to the input Excel file and adjust the sheet names if needed. The input file must contain separate sheets for pipes, inspections, and defects.
+
+If hydraulic model data are available, include an additional sheet for hydraulic properties and list it in sheet_names. If no hydraulic data are available, this sheet can be omitted and its name removed from the list.
+
+```python
+df_information = load_multiple_sheets(
+    r"..\2.Data_validation\Validation_rules\Validated_data.xlsx",
+    sheet_names=["PIPES", "CCTV", "DEFECTS", "HYDRAULIC_PROPERTIES"]
+)
+```
+
+---
+## Outputs
+The code generates:
+
+- A dataset description, including summary tables and a comparison between all pipes in the network and those inspected via CCTV.
+
+- An analysis of the average number of defects per kilometer and per pipe for the analyzed pipe materials.
+
+- The distribution of defect types by material.
+
+- Plots illustrating the distribution of defect properties by material.
+
+---
+## Citation
+
+If you use this repository in your research, please cite the corresponding paper:
+
+Herrán, J., González, M. A., van Zyl, J. E., & Henning, T. F. P. (2026). 
+Distribution and Properties of Defects in Urban Drainage Systems: An analysis of Auckland's Sewer Network. _Journal of Water Resources Planning and Management_.
+
+---
+## License
+
+This project is distributed under the MIT License.
+See the `LICENSE` file for the full text.
+
+---
+## Contact
+
+For questions, feedback, or collaboration inquiries related to the paper or this repository, please contact the corresponding author:
+
+**Juana Herrán**  
+Email: _jher924@aucklanduni.ac.nz_  
+Affiliation: University of Auckland
 
 
-
-## 4) Data Input and Validation Workflow
-**Input Data**
-
-The validator is designed to work with a single Excel workbook that must contain **three sheets**: `PIPES`, `CCTV`, and `DEFECTS`
-
-If a CSV file is provided instead, it will be treated as the `PIPES` sheet only; the other two will remain empty.
-
-**Output Report**
-
-The script creates an Excel report with four sheets:
-- **SUMMARY**: Number of errors and warnings per input sheet
-- **PIPES / CCTV / DEFECTS**: Detailed validation results
-
-The validator checks for:
-- Missing or null values
-- Non-numeric or negative numbers in numeric fields
-- Duplicated identifiers
-- Out-of-range installation years or diameters
-
-
-
-## 5) Data Preparation
-
-This section merges and prepares the data for analysis.
-
-- **Select Material(s) to Analyze _(User can edit)_**: Choose one or more materials to include (e.g., AC, CONC, VC, PVC, PE).
-
-- **Select the factor(s) to Analyze _(User can edit)_**: Define which variables (age, length, slope, etc.) to include.
-
-- **Merge and Align Data**: Combine information from PIPES, CCTV, and DEFECTS using PIPE_ID.
-
-- **Create color map for defects**: Automatically generate a consistent color palette for defect types.
-
-
-
-## 6) Dataset Description
-
-This section provides a comprehensive overview of the datasets used in the analysis. It aims to summarize and visualize the main characteristics of the sewer network, the subset of pipes inspected by CCTV, and their representativeness. Three main functions are used in this stage:
-
- - `combined_summary_two_tables()`
-
-Compares two datasets (typically the full network and the CCTV-inspected subset) by generating descriptive statistics for both. It provides an overview of how the inspected sample differs from the overall network in terms of key numerical (e.g., pipe length, slope, depth) and categorical factors (e.g., material, sewer type). The outputs help identify potential sampling biases.
-
- - `plot_ecdf_by_material_overlay()`
-
-Visualizes the cumulative distribution of different variables (such as length, slope, or depth) for the complete network and the CCTV sample, broken down by material. By overlaying both distributions, it highlights whether certain materials or property ranges are overrepresented in the inspections. It is particularly useful for assessing the representativeness of the inspected dataset.
-
- - `plot_boxplots_grid()`
-
-Gnerates a grid of boxplots that display the distribution of numeric variables grouped by material. It provides a clear visual comparison of how properties such as pipe diameter, length, slope, or depth vary across materials.
-
-
-## 7) Defect Properties Analysis
-
-In this section, the focus shifts from describing the overall network to analyzing the defects observed during CCTV inspections.
-The goal is to understand how defects are distributed, how frequent they are, and where they tend to occur along and around the pipe wall.
-The main analyses are grouped into two categories:
-
-### 7.1) Defects per Kilometer and per Pipe
-- `plot_defects_per_km()`
-
-Computes and visualizes the number of defects per kilometer for each pipe material.
-It normalizes the total number of observed defects by the inspected pipe length, allowing a fair comparison across materials.
-The resulting bar chart helps identify which materials have the highest defect density.
-
-- `plot_defect_counts_per_pipe()`
-
-Calculates the average number of defects per pipe and plots them by material.
-It complements the per-kilometer analysis, showing whether certain materials consistently accumulate more defects per pipe, regardless of their length.
-Together, both plots summarize the overall defect intensity and frequency across materials.
-
-### 7.2) Defect Properties and Correlation
-
-- `plot_defects_stacked_with_others()`
-
-Creates two stacked bar charts showing the composition of defect types by material.
-The top chart includes only the most frequent defects (above a user-defined threshold), while less common defects are grouped under “Others.”
-The bottom chart expands the “Others” category, providing insight into the rare defect types.
-This visualization clarifies which defect types dominate each material.
-
-- `plot_defect_size_bars_()`
-
-Examines the size distribution of defects (Small, Medium, Large) for each material.
-It displays a set of horizontal stacked bars—one per material—where the width of each segment represents the relative proportion of each defect size.
-The chart helps compare whether some materials tend to experience larger or smaller defects.
-
-- `plot_defect_heatmaps_longitudinal()`
-
-Produces heatmaps showing the longitudinal position of defects along the pipes.
-Each defect type forms a row, and the horizontal axis represents normalized pipe length (0–1).
-The color intensity indicates the frequency of defects at each position, allowing users to see whether certain defect types occur more often near pipe ends or mid-sections.
-
-- `plot_defect_density_extent_horizontal()`
-
-Analyzes the extent of each defect along the pipe by considering both its start position and normalized length.
-It accumulates all defect intervals and visualizes them as a density heatmap, where darker colors indicate zones where defects overlap.
-This approach highlights whether certain defect types tend to spread over longer sections or concentrate in specific regions.
-
-- `plot_defect_position_heatmaps()`
-
-Visualizes the circumferential position of defects, using clock references (1–12 o’clock).
-It produces heatmaps for each material, showing where around the pipe wall different defect types tend to occur (e.g., roots near the invert, cracks near the crown).
-It provides a clear view of how defects are distributed around the pipe circumference.
-
-- `plot_defect_type_correlation()`
-
-Explores how defect types co-occur within the same pipe.
-It generates a correlation matrix showing which defects often appear together, suggesting possible causal or structural relationships (e.g., joint faults associated with infiltration or cracking).
-This analysis supports the identification of combined failure patterns and dependencies between defect mechanisms.
-
-
-
-## 8) How to run the code
-To execute the analysis, simply run the script `DEFECT_SEWER_ANALYSIS.ipynb.`
-When the code starts, a window will automatically appear asking you to select the Excel file that contains the input data.
-
-Once the file is selected, the program will:
-
-- Validate the input data and check for missing or inconsistent values.
-
-- Generate descriptive summaries of the dataset.
-
-- Analyze the properties and distributions of defects.
-
-- Save all results — including figures and summary tables — inside a folder named `Results`.
-
-No additional user interaction is required beyond selecting the file.
-All output files (plots and Excel summaries) are automatically generated.
 
 
 
