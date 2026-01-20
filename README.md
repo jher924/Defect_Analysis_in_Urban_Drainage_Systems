@@ -20,21 +20,21 @@ The repository contains the code used to generate the tables and figures present
 
 The codebase consists of six Python files and one Jupyter Notebook, where the full analysis workflow is executed. The core logic is implemented in the Python scripts, while the Jupyter Notebook is used to orchestrate their execution and visualize results. Below is a general description of each file. Detailed documentation of individual functions can be found within the corresponding source files.
 
-#### Run_defect_description.ipynb
+#### `Run_defect_description.ipynb`
 This Jupyter Notebook serves as the main entry point of the project. It orchestrates the execution of all scripts and displays the tables and figures generated during the analysis. The notebook does not contain core processing logic; instead, it focuses on configuration, execution flow, and result visualization. It also manages the selection of materials (e.g., AC, CONC, VC, PVC, PE) and factors (e.g., age, length, slope, etc.) to be included in the analysis.
-#### config.py
+#### `config.py`
 Defines the global variables that are accessed and used by the other files.
-#### load_excel.py
+#### `load_excel.py`
 Contains functions for loading and importing input data from an Excel file.
-#### data_preparation.py
+#### `data_preparation.py`
 Prepares the data for analysis. It performs the required data merges and includes functions to select and validate the chosen materials and factors. In addition, it defines color maps for materials and defect types.
-#### dataset_description.py
+#### `dataset_description.py`
 Provides the functions for a detailed description of the dataset, summarizing key properties and characteristics of the sewer network and inspections. It also analyzes the representativeness of the pipes inspected by CCTV.
-#### defect_correlation.py
+#### `defect_correlation.py`
 Contains the function used to calculate pearson correlations between defect types.
-#### defect_general_description.py
+#### `defect_general_description.py`
 Includes functions that generate a general description of the network, such as the number of defects per kilometer and per pipe, as well as the distribution of defect types by material.
-#### defect_properties_description.py
+#### `defect_properties_description.py`
 Provides functions to analyze the properties of observed defects, including size, longitudinal distance, extent, and clock reference position.
 
 ---
@@ -127,7 +127,8 @@ Below is a description of the required columns for each sheet.
     <td>Defect_length</td>
     <td>Normalized defect length (distance from the start of the defect to its end, relative to pipe length).</td>
   </tr>
-<!-- Separator -->
+  
+  <!-- Separator -->
   <tr><td colspan="3"><hr></td></tr>
 
   <!-- HYDRAULIC PROPERTIES -->
@@ -220,6 +221,7 @@ For questions, feedback, or collaboration inquiries related to the paper or this
 **Juana Herrán**  
 Email: _jher924@aucklanduni.ac.nz_  
 Affiliation: University of Auckland
+
 
 
 
